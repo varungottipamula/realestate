@@ -5,19 +5,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =============================================
     const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? '/api'
-        : null; // null = offline/file mode, use local data only
+        : 'https://realestate-1-p4gy.onrender.com/api';
 
     let backendAvailable = false;
-
-    // Quick ping to check if backend is running
-    if (API_BASE) {
-        try {
-            const res = await fetch(`${API_BASE}/properties?category=residential`, { signal: AbortSignal.timeout(2000) });
-            backendAvailable = res.ok;
-        } catch (e) {
-            backendAvailable = false;
-        }
-    }
 
     // Array of properties based on design screenshots
     const properties = [
@@ -199,21 +189,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =============================================
     // FETCH PROPERTIES FROM BACKEND (with fallback)
     // =============================================
-    async function fetchPropertiesFromAPI() {
-        if (!backendAvailable) return null;
+    async function loadLiveProperties() {
+        if (!API_BASE) return;
+        
         try {
-            // Fetch only residential for main grid (index.html)
             const res = await fetch(`${API_BASE}/properties?category=residential`);
-            if (res.ok) return await res.json();
-        } catch (e) { /* swallow */ }
-        return null;
-    }
+            if (res.ok) {
+                const liveData = await res.json();
+                if (liveData && liveData.length > 0) {
+                    backendAvailable = true;
+                    // Replace the local properties array with live data from the backend
+                    properties.splice(0, properties.length, ...liveData);
+                    currentFilteredList = properties;
+                    applyFiltering();
+                    console.log("Backend connection established. Loaded live properties.");
+                    return;
+                }
+            }
+        } catch (e) {
+            console.log("Backend sleeping or offline. Retrying in background to wake up...");
+        }
 
-    // Merge: API residential properties override local ones (IDs 1-9)
-    const apiResidential = await fetchPropertiesFromAPI();
-    if (apiResidential && apiResidential.length > 0) {
-        // Replace the local properties array with live data from the backend
-        properties.splice(0, properties.length, ...apiResidential);
+        // Background retry loop to handle Render wake-up (spin-down)
+        let retries = 0;
+        const interval = setInterval(async () => {
+            retries++;
+            if (retries > 6) { // Try for 90 seconds (6 * 15s)
+                clearInterval(interval);
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE}/properties?category=residential`);
+                if (res.ok) {
+                    const liveData = await res.json();
+                    if (liveData && liveData.length > 0) {
+                        backendAvailable = true;
+                        properties.splice(0, properties.length, ...liveData);
+                        currentFilteredList = properties;
+                        applyFiltering();
+                        clearInterval(interval);
+                        console.log("Backend woke up! Loaded live properties.");
+                    }
+                }
+            } catch (err) {
+                // keep trying
+            }
+        }, 15000);
     }
 
     const propertiesGrid = document.getElementById('properties-grid');
@@ -333,11 +354,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const propId = parseInt(params.get('id'));
         
         let prop = null;
-        if (backendAvailable && propId) {
+        if (API_BASE && propId) {
             try {
                 const res = await fetch(`${API_BASE}/properties/${propId}`);
                 if (res.ok) {
                     prop = await res.json();
+                    backendAvailable = true;
                 }
             } catch (e) {
                 console.error('Failed to fetch property details from API:', e);
@@ -1829,5 +1851,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize showing residential category
         renderCategoryShowcase('residential');
     }
+
+    // Trigger background loading of live properties from backend
+    loadLiveProperties();
 
 });

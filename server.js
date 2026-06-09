@@ -3,12 +3,23 @@ const cors = require('cors');
 const path = require('path');
 const crypto = require('crypto');
 const db = require('./db');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Enable CORS and parsers
 app.use(cors());
+
+// Keep-alive self-ping to prevent Render spin-down (every 14 minutes)
+const RENDER_URL = 'https://realestate-1-p4gy.onrender.com';
+setInterval(() => {
+    https.get(`${RENDER_URL}/api/properties?category=residential`, (res) => {
+        console.log(`Self-ping status: ${res.statusCode}`);
+    }).on('error', (err) => {
+        console.error('Self-ping error:', err.message);
+    });
+}, 14 * 60 * 1000); // 14 minutes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
