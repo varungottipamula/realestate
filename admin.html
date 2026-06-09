@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Elite Estates</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Admin CSS -->
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         1. LOGIN PANEL OVERLAY (Shown by default)
+         ========================================== -->
+    <div id="loginView" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">Elite<span>Estates</span></div>
+                <div class="login-subtitle">Admin Workspace</div>
+            </div>
+            
+            <div id="loginError" class="login-error-msg"></div>
+
+            <form id="loginForm" class="admin-form">
+                <div class="form-group-admin">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required autocomplete="username" placeholder="Enter admin username">
+                </div>
+                <div class="form-group-admin">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required autocomplete="current-password" placeholder="Enter secure password">
+                </div>
+                <button type="submit" class="btn-admin btn-admin-gold w-100 mt-3" style="padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.95rem;">
+                    Access Workspace <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left: 0.5rem;"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+         2. MAIN ADMIN SHELL (Hidden by default)
+         ========================================== -->
+    <div id="adminShell" class="admin-shell" style="display: none;">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-gem" style="color: var(--color-admin-gold); font-size: 1.25rem;"></i>
+                <div class="sidebar-logo">Elite<span>Estates</span></div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <div class="menu-item active" data-target="dashboardSection">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-target="propertiesSection">
+                    <i class="fa-solid fa-building"></i>
+                    <span>Properties</span>
+                </div>
+                <div class="menu-item" data-target="inquiriesSection">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                    <span>Inquiries</span>
+                </div>
+                <div class="menu-item" data-target="newsletterSection">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>Newsletter</span>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="btnLogout" class="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN WINDOW -->
+        <main class="admin-main">
+            
+            <!-- HEADER -->
+            <header class="admin-header">
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Real-time portfolio metrics and lead submissions</p>
+                </div>
+                <div class="admin-user-profile">
+                    <div class="admin-avatar">A</div>
+                    <div class="admin-user-name">System Admin</div>
+                </div>
+            </header>
+
+            <!-- ==========================================
+                 A. DASHBOARD SECTION (default active)
+                 ========================================== -->
+            <section id="dashboardSection" class="dashboard-section active">
+                
+                <!-- Metrics Counters -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Total Properties</span>
+                            <span id="statTotalProperties" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Leads Received</span>
+                            <span id="statTotalInquiries" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Unresolved Leads</span>
+                            <span id="statPendingInquiries" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-icon-wrapper" style="color: var(--color-status-pending-text);">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <span class="stat-label">Subscribers</span>
+                            <span id="statNewsletterSubs" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-icon-wrapper">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Inquiries Panel -->
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            Recent Inquiries
+                        </h2>
+                        <button class="btn-admin btn-admin-secondary" onclick="document.querySelector('[data-target=inquiriesSection]').click()">
+                            View All Leads <i class="fa-solid fa-angle-right" style="margin-left: 0.25rem;"></i>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Lead</th>
+                                    <th>Interest Property</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentInquiriesList">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2rem;">Loading recent inquiries...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ==========================================
+                 B. PROPERTIES SECTION
+                 ========================================== -->
+            <section id="propertiesSection" class="dashboard-section">
+                
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-building"></i>
+                            Manage Properties
+                        </h2>
+                        <div class="panel-actions">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="propertySearch" placeholder="Search property/developer...">
+                            </div>
+                            <select id="propertyCategoryFilter" class="category-filter">
+                                <option value="all">All Categories</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="land">Land Plots</option>
+                            </select>
+                            <button id="btnNewProperty" class="btn-admin btn-admin-gold">
+                                <i class="fa-solid fa-plus"></i> Add Property
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Property Details</th>
+                                    <th>Location</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="propertiesList">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">Loading properties...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ==========================================
+                 C. INQUIRIES SECTION
+                 ========================================== -->
+            <section id="inquiriesSection" class="dashboard-section">
+
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            Lead Inquiries
+                        </h2>
+                        <div class="panel-actions">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="inquirySearch" placeholder="Search lead/message...">
+                            </div>
+                            <select id="inquiryStatusFilter" class="category-filter">
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="contacted">Contacted</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Lead Name</th>
+                                    <th>Contact Info</th>
+                                    <th>Interest Property</th>
+                                    <th>Message Details</th>
+                                    <th>Received Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inquiriesList">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">Loading inquiries...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- ==========================================
+                 D. NEWSLETTER SECTION
+                 ========================================== -->
+            <section id="newsletterSection" class="dashboard-section">
+
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Newsletter Subscribers
+                        </h2>
+                        <button id="btnCopyEmails" class="btn-admin btn-admin-gold">
+                            <i class="fa-solid fa-copy"></i> Copy All Emails
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="admin-table" style="max-width: 800px; margin: 0 auto;">
+                            <thead>
+                                <tr>
+                                    <th>Subscriber Email</th>
+                                    <th>Subscription Date</th>
+                                    <th style="width: 100px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newsletterList">
+                                <tr>
+                                    <td colspan="3" style="text-align: center; padding: 2rem;">Loading subscribers...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+
+    <!-- ==========================================
+         3. ADD / EDIT PROPERTY MODAL
+         ========================================== -->
+    <div id="propertyModal" class="admin-modal-overlay">
+        <div class="admin-modal-content">
+            <div class="modal-header">
+                <h3 id="propertyModalTitle" class="modal-title">Create New Property</h3>
+                <button type="button" class="modal-close-btn" id="btnPropertyModalClose"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <form id="propertyForm">
+                <input type="hidden" id="editPropertyId">
+                
+                <div class="modal-body">
+                    <div class="admin-form">
+                        
+                        <!-- Row 1: Name & Developer -->
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="propName">Property Title *</label>
+                                <input type="text" id="propName" required placeholder="e.g. Skyline Residency">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="propDeveloper">Developer / Agency *</label>
+                                <input type="text" id="propDeveloper" required placeholder="e.g. Lodha Group">
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Location & Category -->
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="propLocation">Location *</label>
+                                <input type="text" id="propLocation" required placeholder="e.g. Andheri East, Mumbai">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="propCategory">Portfolio Category *</label>
+                                <select id="propCategory" required>
+                                    <option value="residential">Residential</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="land">Land Plots</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Price & Type -->
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="propPrice">Price *</label>
+                                <input type="text" id="propPrice" required placeholder="e.g. ₹ 2.25 Cr">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="propType">Property Type *</label>
+                                <input type="text" id="propType" required placeholder="e.g. 2 BHK Apartment / Office Space">
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Area & Image URL -->
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="propArea">Carpet Area *</label>
+                                <input type="text" id="propArea" required placeholder="e.g. 850 Sq. Ft.">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="propImage">Main Image URL *</label>
+                                <input type="url" id="propImage" required placeholder="https://unsplash.com/...">
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Badge & Status -->
+                        <div class="form-row-2">
+                            <div class="form-group-admin">
+                                <label for="propBadge">Badge Text</label>
+                                <input type="text" id="propBadge" placeholder="e.g. NEW LAUNCH / READY TO MOVE">
+                            </div>
+                            <div class="form-group-admin">
+                                <label for="propStatus">Status</label>
+                                <input type="text" id="propStatus" placeholder="e.g. Ready / Under Construction">
+                            </div>
+                        </div>
+
+                        <!-- Extra Specs (Collapsible/Optional Fields) -->
+                        <div style="border-top: 1px solid var(--color-admin-border); margin-top: 1rem; padding-top: 1rem;">
+                            <h4 style="font-size: 0.9rem; color: var(--color-admin-text-title); margin-bottom: 1rem;">Extended Specifications</h4>
+                            
+                            <div class="form-row-2">
+                                <div class="form-group-admin">
+                                    <label for="propFloor">Floor</label>
+                                    <input type="text" id="propFloor" placeholder="e.g. 18th of 25">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label for="propFurniture">Furniture Status</label>
+                                    <input type="text" id="propFurniture" placeholder="e.g. Semi / Fully / None">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row-2 mt-3">
+                                <div class="form-group-admin">
+                                    <label for="propSqFtPrice">Sq. Ft. Price</label>
+                                    <input type="text" id="propSqFtPrice" placeholder="e.g. ₹ 19,565 / Sq. Ft.">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label for="propBuiltUp">Built-up Area</label>
+                                    <input type="text" id="propBuiltUp" placeholder="e.g. 1,150 Sq. Ft.">
+                                </div>
+                            </div>
+
+                            <div class="form-row-2 mt-3">
+                                <div class="form-group-admin">
+                                    <label for="propOwnership">Ownership type</label>
+                                    <input type="text" id="propOwnership" placeholder="e.g. Freehold">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label for="propTransaction">Transaction Type</label>
+                                    <input type="text" id="propTransaction" placeholder="e.g. Resale / New Booking">
+                                </div>
+                            </div>
+
+                            <div class="form-row-2 mt-3">
+                                <div class="form-group-admin">
+                                    <label for="propRera">RERA Number</label>
+                                    <input type="text" id="propRera" placeholder="e.g. P51800012345">
+                                </div>
+                                <div class="form-group-admin">
+                                    <label for="propBadgeColor">Badge BG Color (HEX)</label>
+                                    <input type="text" id="propBadgeColor" placeholder="e.g. #111111">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description details -->
+                        <div style="border-top: 1px solid var(--color-admin-border); margin-top: 1rem; padding-top: 1rem;">
+                            <h4 style="font-size: 0.9rem; color: var(--color-admin-text-title); margin-bottom: 1rem;">Descriptions</h4>
+                            
+                            <div class="form-group-admin">
+                                <label for="propDesc1">Brief Description / Hook *</label>
+                                <textarea id="propDesc1" required placeholder="Main descriptive summary for details page..."></textarea>
+                            </div>
+                            <div class="form-group-admin mt-3">
+                                <label for="propDesc2">Detailed Description</label>
+                                <textarea id="propDesc2" placeholder="Secondary location / spec info paragraphs..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Gallery dynamic list editor -->
+                        <div style="border-top: 1px solid var(--color-admin-border); margin-top: 1rem; padding-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h4 style="font-size: 0.9rem; color: var(--color-admin-text-title);">Photo Gallery</h4>
+                                <button type="button" id="btnAddGalleryItem" class="btn-admin btn-admin-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-plus"></i> Add Photo
+                                </button>
+                            </div>
+                            
+                            <div id="galleryInputsContainer" class="gallery-list-editor">
+                                <!-- JS will add rows here dynamically -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-admin btn-admin-secondary" id="btnPropertyFormCancel">Cancel</button>
+                    <button type="submit" class="btn-admin btn-admin-gold">Save Property</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel Client Script -->
+    <script src="admin.js"></script>
+</body>
+</html>

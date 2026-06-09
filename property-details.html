@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Estates | Property Details</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- MOBILE NAV OVERLAY -->
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <i class="fa-solid fa-xmark close-menu" id="closeMenu"></i>
+        <nav class="mobile-nav-links">
+            <a href="explore.html" class="mobile-nav-link">Explore</a>
+            <a href="about.html" class="mobile-nav-link">About</a>
+            <a href="index.html" class="mobile-nav-link">Properties</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </nav>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <a href="index.html" class="logo-text">Elite Estates</a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="explore.html" class="nav-link">Explore</a></li>
+                    <li><a href="about.html" class="nav-link">About</a></li>
+                    <li><a href="index.html" class="nav-link active">Properties</a></li>
+                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <div class="user-actions">
+                <button class="btn btn-dark call-now-btn">Call Now</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- PROPERTY DETAILS — dynamically filled by script.js -->
+        <div id="property-details-root">
+            <!-- Loading state -->
+            <div style="text-align:center; padding: 8rem 2rem; color: var(--color-text-light);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                <p style="margin-top:1rem;">Loading property...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER (Reused) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2 class="footer-logo">ELITE ESTATES</h2>
+                    <p class="footer-desc">Andheri East's most trusted real estate partner, specializing in ultra-luxury residences and corporate spaces. Precision in every square foot.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">QUICK LINKS</h4>
+                    <ul class="footer-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="explore.html">Explore</a></li>
+                        <li><a href="index.html">Properties</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">SERVICES</h4>
+                    <ul class="footer-menu">
+                        <li><a href="#">Property Management</a></li>
+                        <li><a href="#">Legal Advisory</a></li>
+                        <li><a href="#">Interior Design</a></li>
+                        <li><a href="#">Home Loan Support</a></li>
+                        <li><a href="#">Virtual Tours</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-newsletter">
+                    <h4 class="footer-heading">NEWSLETTER</h4>
+                    <p>Stay updated with the latest properties in Andheri East.</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" placeholder="Email Address" required>
+                        <button type="submit" aria-label="Subscribe" class="newsletter-btn"><i class="fa-solid fa-play"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Elite Estates. All Rights Reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Settings</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

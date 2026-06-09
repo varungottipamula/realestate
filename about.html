@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Estates | About Our Company</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- MOBILE NAV OVERLAY -->
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <i class="fa-solid fa-xmark close-menu" id="closeMenu"></i>
+        <nav class="mobile-nav-links">
+            <a href="explore.html" class="mobile-nav-link">Explore</a>
+            <a href="about.html" class="mobile-nav-link active">About</a>
+            <a href="index.html" class="mobile-nav-link">Properties</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </nav>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fa-solid fa-bars menu-icon"></i>
+                <a href="index.html" class="logo-text">Elite Estates</a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="explore.html" class="nav-link">Explore</a></li>
+                    <li><a href="about.html" class="nav-link active">About</a></li>
+                    <li><a href="index.html" class="nav-link">Properties</a></li>
+                    <li><a href="contact.html" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <div class="user-actions">
+                <button class="btn btn-dark call-now-btn">Call Now</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ABOUT OUR COMPANY HERO -->
+        <section class="about-hero container">
+            <div class="about-hero-grid">
+                <div class="about-content">
+                    <h1 class="section-title">About Our Company</h1>
+                    <p class="about-desc">
+                        At Elite Estates, we transcend traditional real estate brokerage. We are consultants who understand that a home in Andheri East is more than just a pin on a map—it's a strategic choice for connectivity, lifestyle, and growth. With over a decade of specialization in this micro-market, we bring unparalleled precision to every transaction.
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature-box">
+                            <i class="fa-regular fa-circle-check feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Verified Properties</h4>
+                                <p>100% legal due diligence done.</p>
+                            </div>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fa-solid fa-headset feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Expert Consultation</h4>
+                                <p>Personalized advisory for ROI.</p>
+                            </div>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fa-solid fa-handshake feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Seamless Closures</h4>
+                                <p>End-to-end documentation support.</p>
+                            </div>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fa-solid fa-arrow-trend-up feature-icon"></i>
+                            <div class="feature-text">
+                                <h4>Growth Market</h4>
+                                <p>Focus on high-appreciation zones.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="company-core-values-card" style="background: var(--color-primary); padding: 2.5rem; border-radius: var(--radius-lg); border: 2px solid var(--color-gold); box-shadow: var(--shadow-lg); color: white; display: flex; flex-direction: column; gap: 1.5rem; position: relative;">
+                    <h3 style="font-size: 1.6rem; color: var(--color-gold); font-weight: 700; border-bottom: 2px solid rgba(192, 154, 77, 0.2); padding-bottom: 0.75rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Our Core Values</h3>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1.25rem;">
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div style="width: 42px; height: 42px; background: rgba(192, 154, 77, 0.1); border: 1px solid var(--color-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--color-gold); flex-shrink: 0;">
+                                <i class="fa-solid fa-eye"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.05rem; color: white; font-weight: 600; margin-bottom: 0.25rem;">Absolute Transparency</h4>
+                                <p style="font-size: 0.85rem; color: var(--color-text-light); line-height: 1.5; margin: 0;">Every listing is represented with accurate metrics, total price disclosures, and direct developer specifications.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div style="width: 42px; height: 42px; background: rgba(192, 154, 77, 0.1); border: 1px solid var(--color-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--color-gold); flex-shrink: 0;">
+                                <i class="fa-solid fa-file-shield"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.05rem; color: white; font-weight: 600; margin-bottom: 0.25rem;">Verified Titles</h4>
+                                <p style="font-size: 0.85rem; color: var(--color-text-light); line-height: 1.5; margin: 0;">We strictly partner with RERA-compliant projects and perform complete legal land title due diligence checks.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div style="width: 42px; height: 42px; background: rgba(192, 154, 77, 0.1); border: 1px solid var(--color-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--color-gold); flex-shrink: 0;">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.05rem; color: white; font-weight: 600; margin-bottom: 0.25rem;">ROI Advisory</h4>
+                                <p style="font-size: 0.85rem; color: var(--color-text-light); line-height: 1.5; margin: 0;">Our advisors provide customized portfolio projections focusing on rental yields and historical capital appreciation trends.</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                            <div style="width: 42px; height: 42px; background: rgba(192, 154, 77, 0.1); border: 1px solid var(--color-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--color-gold); flex-shrink: 0;">
+                                <i class="fa-solid fa-key"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.05rem; color: white; font-weight: 600; margin-bottom: 0.25rem;">Turnkey Closure</h4>
+                                <p style="font-size: 0.85rem; color: var(--color-text-light); line-height: 1.5; margin: 0;">From bank loan clearances to title registration and final possession audits, we manage the entire home buying cycle.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURED PROJECTS -->
+        <section class="featured-projects container">
+            <div class="section-header-top">
+                <div class="section-titles">
+                    <h2 class="section-title">Featured Projects</h2>
+                    <p class="section-subtitle">Curated selection of premier developments in Andheri East</p>
+                </div>
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev-btn"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="carousel-btn next-btn"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="projects-carousel" id="projects-carousel">
+                <!-- Hardcoded Project Cards with data-ids -->
+                <div class="project-card" data-id="1">
+                    <div class="project-image-container">
+                        <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=600" alt="Skyline Residency" class="project-image">
+                        <span class="property-badge gold-badge">ANDHERI EAST</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Skyline Residency</h3>
+                        <p class="project-meta">Starting from ₹ 2.25 Cr* • 2 BHK</p>
+                        <div class="project-amenities">
+                            <span class="amenity"><i class="fa-solid fa-water"></i> Pool</span>
+                            <span class="amenity"><i class="fa-solid fa-dumbbell"></i> Gym</span>
+                            <span class="amenity"><i class="fa-solid fa-leaf"></i> Garden</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card" data-id="2">
+                    <div class="project-image-container">
+                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=600" alt="Elite Heights" class="project-image">
+                        <span class="property-badge blue-badge">READY TO MOVE</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Elite Heights</h3>
+                        <p class="project-meta">Starting from ₹ 2.40 Cr* • 2 BHK</p>
+                        <div class="project-amenities">
+                            <span class="amenity"><i class="fa-solid fa-shield-halved"></i> 24/7 Security</span>
+                            <span class="amenity"><i class="fa-solid fa-square-parking"></i> Parking</span>
+                            <span class="amenity"><i class="fa-solid fa-dumbbell"></i> Lounge Gym</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card" data-id="3">
+                    <div class="project-image-container">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600" alt="Imperial Vista" class="project-image">
+                        <span class="property-badge dark-badge">PREMIUM SELECTION</span>
+                    </div>
+                    <div class="project-content">
+                        <h3 class="project-title">Imperial Vista</h3>
+                        <p class="project-meta">Starting from ₹ 2.15 Cr* • 2 BHK</p>
+                        <div class="project-amenities">
+                            <span class="amenity"><i class="fa-solid fa-spa"></i> Spa Deck</span>
+                            <span class="amenity"><i class="fa-solid fa-building"></i> View Deck</span>
+                            <span class="amenity"><i class="fa-solid fa-mug-hot"></i> Modern Kitchen</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXPLORE PROPERTY IMAGES (MASONRY) -->
+        <section class="explore-images container">
+            <h2 class="section-title text-center">Explore Property Images</h2>
+            <div class="masonry-grid">
+                <div class="masonry-item large">
+                    <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&q=80&w=800" alt="Living Room with City View">
+                </div>
+                <div class="masonry-item">
+                    <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&q=80&w=400" alt="Luxury Bedroom">
+                </div>
+                <div class="masonry-item">
+                    <img src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&q=80&w=400" alt="Swimming Pool">
+                </div>
+                <div class="masonry-item wide">
+                    <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&q=80&w=1200" alt="Modern Kitchen">
+                </div>
+            </div>
+        </section>
+
+        <!-- WHAT OUR CLIENTS SAY -->
+        <section class="testimonials-section">
+            <div class="container">
+                <h2 class="section-title text-center section-title-light">What Our Clients Say</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">"Found my dream penthouse through Elite Estates. Their knowledge of the Andheri market is unmatched. Highly recommended for their transparency."</p>
+                        <div class="client-info">
+                            <div class="client-avatar">RS</div>
+                            <div class="client-details">
+                                <strong>Rahul Sharma</strong>
+                                <span>Business Owner</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">"The professional approach and site visit assistance made the process very smooth for a first-time homebuyer like me. Thank you, Elite Estates!"</p>
+                        <div class="client-info">
+                            <div class="client-avatar">PM</div>
+                            <div class="client-details">
+                                <strong>Priya Mehta</strong>
+                                <span>Tech Executive</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card">
+                        <div class="stars">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="testimonial-quote">"Expert consultation that actually looks into ROI and future appreciation. Not just selling, but building long-term relationships."</p>
+                        <div class="client-info">
+                            <div class="client-avatar">AS</div>
+                            <div class="client-details">
+                                <strong>Amit Shah</strong>
+                                <span>Investor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FREQUENTLY ASKED QUESTIONS -->
+        <section class="faq-section container">
+            <h2 class="section-title text-center">Frequently Asked Questions</h2>
+            <div class="faq-accordion">
+                <details class="faq-item">
+                    <summary class="faq-question">
+                        Are all your listed properties RERA registered?
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>Yes, we ensure that every property we list is strictly compliant with RERA regulations, guaranteeing secure investments and complete transparency.</p>
+                    </div>
+                </details>
+                
+                <details class="faq-item">
+                    <summary class="faq-question">
+                        How do I schedule a site visit?
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>You can schedule a site visit by filling out the Connect Form on our contact page, calling our dedicated hotline, or interacting directly with our agents online. We offer flexible times tailored to your preferences.</p>
+                    </div>
+                </details>
+
+                <details class="faq-item">
+                    <summary class="faq-question">
+                        Do you provide loan assistance?
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </summary>
+                    <div class="faq-answer">
+                        <p>We work tightly with major financial institutions and can connect you with trusted loan advisors who can fast-track your approval process.</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER (Reused) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2 class="footer-logo">ELITE ESTATES</h2>
+                    <p class="footer-desc">Andheri East's most trusted real estate partner, specializing in ultra-luxury residences and corporate spaces. Precision in every square foot.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">QUICK LINKS</h4>
+                    <ul class="footer-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="explore.html">Explore</a></li>
+                        <li><a href="index.html">Properties</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4 class="footer-heading">SERVICES</h4>
+                    <ul class="footer-menu">
+                        <li><a href="#">Property Management</a></li>
+                        <li><a href="#">Legal Advisory</a></li>
+                        <li><a href="#">Interior Design</a></li>
+                        <li><a href="#">Home Loan Support</a></li>
+                        <li><a href="#">Virtual Tours</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-newsletter">
+                    <h4 class="footer-heading">NEWSLETTER</h4>
+                    <p>Stay updated with the latest properties in Andheri East.</p>
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" placeholder="Email Address" required>
+                        <button type="submit" aria-label="Subscribe" class="newsletter-btn"><i class="fa-solid fa-play"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Elite Estates. All Rights Reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Settings</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
