@@ -48,7 +48,7 @@ files.forEach(file => {
         );
         // Sidebar header
         content = content.replace(
-            /<div class="sidebar-header">[\s\S]*?<\/div>/g,
+            /<div class="sidebar-header">[\s\S]*?<\/div>\s*<\/div>/g,
             `<div class="sidebar-header" style="padding: 1.5rem; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--color-admin-border);"><img src="logo.jpg" alt="Elev8 Properties" style="height: 38px; border-radius: 4px;"></div>`
         );
     }
