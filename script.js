@@ -350,6 +350,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =============================================
     const detailsRoot = document.getElementById('property-details-root');
     if (detailsRoot) {
+        function getEmbedUrl(url) {
+            if (!url) return '';
+            if (url.includes('youtube.com/watch')) {
+                try {
+                    const urlObj = new URL(url);
+                    const videoId = urlObj.searchParams.get('v');
+                    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+                } catch(e) {}
+            }
+            if (url.includes('youtu.be/')) {
+                const parts = url.split('youtu.be/');
+                if (parts.length > 1) {
+                    const videoId = parts[1].split('?')[0];
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+            }
+            return url;
+        }
+
         const params = new URLSearchParams(window.location.search);
         const propId = parseInt(params.get('id'));
         
@@ -371,6 +390,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (prop) {
+            const embedUrl = prop.video ? getEmbedUrl(prop.video) : '';
             detailsRoot.innerHTML = `
                 <!-- PROPERTY HERO SECTION -->
                 <section class="explore-hero" style="height: 60vh;">
@@ -670,6 +690,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Property Video Walkthrough Section -->
+                            ${prop.video ? `
+                            <div style="margin-top: 3.5rem; margin-bottom: 2rem;">
+                                <h3 style="font-size: 1.75rem; font-weight: 700; color: var(--color-primary); border-left: 4px solid var(--color-gold); padding-left: 0.75rem; margin-bottom: 1.5rem;">Property Video Walkthrough</h3>
+                                <div style="position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid var(--color-border); background: #000;">
+                                    ${embedUrl.includes('youtube.com/embed') ? `
+                                        <iframe src="${embedUrl}" 
+                                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen></iframe>
+                                    ` : `
+                                        <video src="${embedUrl}" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></video>
+                                    `}
+                                </div>
+                            </div>
+                            ` : ''}
 
                         </div>
 
@@ -1155,19 +1192,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                         body: JSON.stringify({ email })
                     });
                     if (res.ok) {
-                        showToast('You\'re subscribed! Welcome to the Elite Estates Newsletter.', 'success');
+                        showToast('You\'re subscribed! Welcome to the Elev8 Properties Newsletter.', 'success');
                         form.reset();
                     } else {
                         showToast('Subscription failed. Please try again.', 'error');
                     }
                 } catch (err) {
-                    showToast('Thank you for subscribing to the Elite Estates Newsletter!', 'success');
+                    showToast('Thank you for subscribing to the Elev8 Properties Newsletter!', 'success');
                     form.reset();
                 } finally {
                     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
                 }
             } else {
-                showToast('Thank you for subscribing to the Elite Estates Newsletter!', 'success');
+                showToast('Thank you for subscribing to the Elev8 Properties Newsletter!', 'success');
                 form.reset();
             }
         });

@@ -384,6 +384,7 @@ async function openEditPropertyModal(id) {
         document.getElementById('propImage').value = prop.image;
         document.getElementById('propBadge').value = prop.badge || '';
         document.getElementById('propStatus').value = prop.status || '';
+        document.getElementById('propVideo').value = prop.video || '';
         
         // Optional fields
         document.getElementById('propFloor').value = prop.floor || '';
@@ -452,6 +453,7 @@ propertyForm.addEventListener('submit', async (e) => {
         image: document.getElementById('propImage').value.trim(),
         badge: document.getElementById('propBadge').value.trim(),
         status: document.getElementById('propStatus').value.trim(),
+        video: document.getElementById('propVideo').value.trim(),
         
         floor: document.getElementById('propFloor').value.trim(),
         furniture: document.getElementById('propFurniture').value.trim(),
