@@ -366,6 +366,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return `https://www.youtube.com/embed/${videoId}`;
                 }
             }
+            if (url.includes('/shorts/')) {
+                const parts = url.split('/shorts/');
+                if (parts.length > 1) {
+                    const videoId = parts[1].split('?')[0].split('/')[0];
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+            }
             return url;
         }
 
