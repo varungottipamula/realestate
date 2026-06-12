@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin.js
+Disallow: /admin-styles.css
+
+Sitemap: https://elve8properties.com/sitemap.xml
