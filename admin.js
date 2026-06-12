@@ -387,6 +387,7 @@ async function openEditPropertyModal(id) {
         document.getElementById('propVideo').value = prop.video || '';
         
         // Optional fields
+        document.getElementById('propProjectName').value = prop.projectName || '';
         document.getElementById('propFloor').value = prop.floor || '';
         document.getElementById('propFurniture').value = prop.furniture || '';
         document.getElementById('propSqFtPrice').value = prop.sqFtPrice || '';
@@ -455,6 +456,7 @@ propertyForm.addEventListener('submit', async (e) => {
         status: document.getElementById('propStatus').value.trim(),
         video: document.getElementById('propVideo').value.trim(),
         
+        projectName: document.getElementById('propProjectName').value.trim(),
         floor: document.getElementById('propFloor').value.trim(),
         furniture: document.getElementById('propFurniture').value.trim(),
         sqFtPrice: document.getElementById('propSqFtPrice').value.trim(),

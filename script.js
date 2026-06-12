@@ -680,7 +680,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         </div>
                                         <div class="spec-item" style="padding-right: 1.5rem;">
                                             <span style="color: var(--color-text-muted); font-size: 0.95rem; font-weight: 500;">Project Name</span>
-                                            <span style="color: var(--color-primary); font-weight: 700; font-size: 0.95rem;">${prop.developer} Andheri Premium</span>
+                                            <span style="color: var(--color-primary); font-weight: 700; font-size: 0.95rem;">${prop.projectName || `${prop.developer} Andheri Premium`}</span>
                                         </div>
                                         <div class="spec-item" style="padding-left: 1.5rem;">
                                             <span style="color: var(--color-text-muted); font-size: 0.95rem; font-weight: 500;">Ownership</span>
