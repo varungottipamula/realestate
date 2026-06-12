@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { MongoClient } = require('mongodb');
 
 const DB_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DB_DIR, 'db.json');
@@ -540,7 +541,46 @@ class DatabaseManager {
             newsletter: [],
             admin: {}
         };
-        this.init();
+        this.isMongo = !!process.env.MONGODB_URI;
+        this.mongoConnected = false;
+        
+        if (this.isMongo) {
+            this.client = new MongoClient(process.env.MONGODB_URI);
+            this.mongoPromise = this.connectMongo();
+        } else {
+            this.init();
+        }
+    }
+
+    async connectMongo() {
+        try {
+            console.log('Connecting to MongoDB Atlas...');
+            await this.client.connect();
+            this.db = this.client.db();
+            
+            this.propertiesColl = this.db.collection('properties');
+            this.inquiriesColl = this.db.collection('inquiries');
+            this.newsletterColl = this.db.collection('newsletter');
+            this.adminColl = this.db.collection('admin');
+            
+            // Check if database needs seeding
+            const count = await this.propertiesColl.countDocuments();
+            if (count === 0) {
+                console.log('MongoDB is empty. Seeding database with initial data...');
+                await this.propertiesColl.insertMany(INITIAL_PROPERTIES);
+                await this.inquiriesColl.insertMany(INITIAL_INQUIRIES);
+                await this.newsletterColl.insertMany(INITIAL_NEWSLETTER);
+                await this.adminColl.insertOne(INITIAL_ADMIN);
+                console.log('Database seeded successfully.');
+            } else {
+                console.log('MongoDB connected and loaded successfully.');
+            }
+            this.mongoConnected = true;
+        } catch (err) {
+            console.error('Failed to connect to MongoDB, falling back to local file:', err);
+            this.isMongo = false;
+            this.init();
+        }
     }
 
     init() {
@@ -583,6 +623,7 @@ class DatabaseManager {
     }
 
     save() {
+        if (this.isMongo) return; // DB handles saving
         try {
             fs.writeFileSync(DB_FILE, JSON.stringify(this.data, null, 2), 'utf8');
         } catch (err) {
@@ -591,208 +632,389 @@ class DatabaseManager {
     }
 
     // --- Properties Operations ---
-    getProperties(filters = {}) {
-        let results = [...this.data.properties];
+    async getProperties(filters = {}) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            let query = {};
+            if (filters.category && filters.category !== 'all') {
+                query.category = filters.category;
+            }
+            if (filters.location && filters.location !== 'all') {
+                query.location = { $regex: filters.location, $options: 'i' };
+            }
+            if (filters.bhk && filters.bhk !== 'all') {
+                query.type = { $regex: filters.bhk, $options: 'i' };
+            }
+            if (filters.developer && filters.developer !== 'all') {
+                query.developer = { $regex: filters.developer, $options: 'i' };
+            }
+            if (filters.search) {
+                const term = filters.search.trim();
+                query.$or = [
+                    { name: { $regex: term, $options: 'i' } },
+                    { location: { $regex: term, $options: 'i' } },
+                    { developer: { $regex: term, $options: 'i' } },
+                    { type: { $regex: term, $options: 'i' } }
+                ];
+            }
+            
+            let results = await this.propertiesColl.find(query).toArray();
+            
+            if (filters.price && filters.price !== 'all') {
+                results = results.filter(p => {
+                    const croreMatch = p.price.match(/₹\s*([0-9.]+)\s*Cr/i);
+                    if (!croreMatch) return true;
+                    const val = parseFloat(croreMatch[1]);
+                    if (filters.price === 'under-3cr') return val < 3.0;
+                    if (filters.price === '3cr-6cr') return val >= 3.0 && val <= 6.0;
+                    if (filters.price === 'above-6cr') return val > 6.0;
+                    return true;
+                });
+            }
+            return results;
+        } else {
+            let results = [...this.data.properties];
 
-        if (filters.category && filters.category !== 'all') {
-            results = results.filter(p => p.category === filters.category);
+            if (filters.category && filters.category !== 'all') {
+                results = results.filter(p => p.category === filters.category);
+            }
+
+            if (filters.location && filters.location !== 'all') {
+                results = results.filter(p => p.location.toLowerCase().includes(filters.location.toLowerCase()));
+            }
+
+            if (filters.bhk && filters.bhk !== 'all') {
+                results = results.filter(p => p.type.toLowerCase().includes(filters.bhk.toLowerCase()));
+            }
+
+            if (filters.developer && filters.developer !== 'all') {
+                results = results.filter(p => p.developer.toLowerCase().includes(filters.developer.toLowerCase()));
+            }
+
+            if (filters.price && filters.price !== 'all') {
+                results = results.filter(p => {
+                    const croreMatch = p.price.match(/₹\s*([0-9.]+)\s*Cr/i);
+                    if (!croreMatch) return true;
+                    const val = parseFloat(croreMatch[1]);
+                    if (filters.price === 'under-3cr') return val < 3.0;
+                    if (filters.price === '3cr-6cr') return val >= 3.0 && val <= 6.0;
+                    if (filters.price === 'above-6cr') return val > 6.0;
+                    return true;
+                });
+            }
+
+            if (filters.search) {
+                const term = filters.search.toLowerCase().trim();
+                results = results.filter(p => 
+                    p.name.toLowerCase().includes(term) ||
+                    p.location.toLowerCase().includes(term) ||
+                    p.developer.toLowerCase().includes(term) ||
+                    p.type.toLowerCase().includes(term)
+                );
+            }
+
+            return results;
         }
-
-        if (filters.location && filters.location !== 'all') {
-            results = results.filter(p => p.location.toLowerCase().includes(filters.location.toLowerCase()));
-        }
-
-        if (filters.bhk && filters.bhk !== 'all') {
-            // e.g. "2 BHK" or "3 BHK"
-            results = results.filter(p => p.type.toLowerCase().includes(filters.bhk.toLowerCase()));
-        }
-
-        if (filters.developer && filters.developer !== 'all') {
-            results = results.filter(p => p.developer.toLowerCase().includes(filters.developer.toLowerCase()));
-        }
-
-        if (filters.price && filters.price !== 'all') {
-            // Price parsing helper to range filter
-            // price value maps to: 'under-3cr', '3cr-6cr', 'above-6cr'
-            results = results.filter(p => {
-                const croreMatch = p.price.match(/₹\s*([0-9.]+)\s*Cr/i);
-                if (!croreMatch) return true; // keep if cannot parse
-                const val = parseFloat(croreMatch[1]);
-                if (filters.price === 'under-3cr') return val < 3.0;
-                if (filters.price === '3cr-6cr') return val >= 3.0 && val <= 6.0;
-                if (filters.price === 'above-6cr') return val > 6.0;
-                return true;
-            });
-        }
-
-        if (filters.search) {
-            const term = filters.search.toLowerCase().trim();
-            results = results.filter(p => 
-                p.name.toLowerCase().includes(term) ||
-                p.location.toLowerCase().includes(term) ||
-                p.developer.toLowerCase().includes(term) ||
-                p.type.toLowerCase().includes(term)
-            );
-        }
-
-        return results;
     }
 
-    getPropertyById(id) {
-        return this.data.properties.find(p => p.id === parseInt(id));
+    async getPropertyById(id) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            return await this.propertiesColl.findOne({ id: parseInt(id) });
+        } else {
+            return this.data.properties.find(p => p.id === parseInt(id));
+        }
     }
 
-    createProperty(propertyData) {
-        const nextId = this.data.properties.length > 0 
-            ? Math.max(...this.data.properties.map(p => p.id)) + 1 
-            : 1;
-        
-        const newProperty = {
-            id: nextId,
-            ...propertyData,
-            category: propertyData.category || 'residential',
-            gallery: propertyData.gallery || []
-        };
-        
-        this.data.properties.push(newProperty);
-        this.save();
-        return newProperty;
+    async createProperty(propertyData) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const highestProp = await this.propertiesColl.find().sort({ id: -1 }).limit(1).toArray();
+            const nextId = highestProp.length > 0 ? highestProp[0].id + 1 : 1;
+            
+            const newProperty = {
+                id: nextId,
+                ...propertyData,
+                category: propertyData.category || 'residential',
+                gallery: propertyData.gallery || []
+            };
+            
+            await this.propertiesColl.insertOne(newProperty);
+            return newProperty;
+        } else {
+            const nextId = this.data.properties.length > 0 
+                ? Math.max(...this.data.properties.map(p => p.id)) + 1 
+                : 1;
+            
+            const newProperty = {
+                id: nextId,
+                ...propertyData,
+                category: propertyData.category || 'residential',
+                gallery: propertyData.gallery || []
+            };
+            
+            this.data.properties.push(newProperty);
+            this.save();
+            return newProperty;
+        }
     }
 
-    updateProperty(id, propertyData) {
-        const index = this.data.properties.findIndex(p => p.id === parseInt(id));
-        if (index === -1) return null;
+    async updateProperty(id, propertyData) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const targetId = parseInt(id);
+            const current = await this.propertiesColl.findOne({ id: targetId });
+            if (!current) return null;
+            
+            const updated = {
+                ...current,
+                ...propertyData,
+                id: targetId
+            };
+            
+            delete updated._id;
+            
+            await this.propertiesColl.replaceOne({ id: targetId }, updated);
+            return updated;
+        } else {
+            const index = this.data.properties.findIndex(p => p.id === parseInt(id));
+            if (index === -1) return null;
 
-        this.data.properties[index] = {
-            ...this.data.properties[index],
-            ...propertyData,
-            id: parseInt(id) // preserve original ID
-        };
-        this.save();
-        return this.data.properties[index];
+            this.data.properties[index] = {
+                ...this.data.properties[index],
+                ...propertyData,
+                id: parseInt(id)
+            };
+            this.save();
+            return this.data.properties[index];
+        }
     }
 
-    deleteProperty(id) {
-        const index = this.data.properties.findIndex(p => p.id === parseInt(id));
-        if (index === -1) return false;
+    async deleteProperty(id) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const res = await this.propertiesColl.deleteOne({ id: parseInt(id) });
+            return res.deletedCount > 0;
+        } else {
+            const index = this.data.properties.findIndex(p => p.id === parseInt(id));
+            if (index === -1) return false;
 
-        this.data.properties.splice(index, 1);
-        this.save();
-        return true;
+            this.data.properties.splice(index, 1);
+            this.save();
+            return true;
+        }
     }
 
     // --- Inquiries Operations ---
-    getInquiries() {
-        // return newest first
-        return [...this.data.inquiries].sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-
-    createInquiry(inquiryData) {
-        const nextId = this.data.inquiries.length > 0
-            ? Math.max(...this.data.inquiries.map(i => i.id)) + 1
-            : 1;
-        
-        // Find property name if propertyId is provided
-        let propertyName = '';
-        if (inquiryData.propertyId) {
-            const prop = this.getPropertyById(inquiryData.propertyId);
-            if (prop) propertyName = prop.name;
+    async getInquiries() {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            return await this.inquiriesColl.find().sort({ date: -1 }).toArray();
+        } else {
+            return [...this.data.inquiries].sort((a, b) => new Date(b.date) - new Date(a.date));
         }
-
-        const newInquiry = {
-            id: nextId,
-            name: inquiryData.name,
-            email: inquiryData.email,
-            phone: inquiryData.phone || '',
-            message: inquiryData.message,
-            propertyId: inquiryData.propertyId ? parseInt(inquiryData.propertyId) : null,
-            propertyName: propertyName || inquiryData.propertyName || '',
-            status: 'pending',
-            date: new Date().toISOString()
-        };
-
-        this.data.inquiries.push(newInquiry);
-        this.save();
-        return newInquiry;
     }
 
-    updateInquiryStatus(id, status) {
-        const index = this.data.inquiries.findIndex(i => i.id === parseInt(id));
-        if (index === -1) return null;
+    async createInquiry(inquiryData) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const highestInq = await this.inquiriesColl.find().sort({ id: -1 }).limit(1).toArray();
+            const nextId = highestInq.length > 0 ? highestInq[0].id + 1 : 1;
+            
+            let propertyName = '';
+            if (inquiryData.propertyId) {
+                const prop = await this.getPropertyById(inquiryData.propertyId);
+                if (prop) propertyName = prop.name;
+            }
+            
+            const newInquiry = {
+                id: nextId,
+                name: inquiryData.name,
+                email: inquiryData.email,
+                phone: inquiryData.phone || '',
+                message: inquiryData.message,
+                propertyId: inquiryData.propertyId ? parseInt(inquiryData.propertyId) : null,
+                propertyName: propertyName || inquiryData.propertyName || '',
+                status: 'pending',
+                date: new Date().toISOString()
+            };
+            
+            await this.inquiriesColl.insertOne(newInquiry);
+            return newInquiry;
+        } else {
+            const nextId = this.data.inquiries.length > 0
+                ? Math.max(...this.data.inquiries.map(i => i.id)) + 1
+                : 1;
+            
+            let propertyName = '';
+            if (inquiryData.propertyId) {
+                const prop = this.data.properties.find(p => p.id === parseInt(inquiryData.propertyId));
+                if (prop) propertyName = prop.name;
+            }
 
-        this.data.inquiries[index].status = status;
-        this.save();
-        return this.data.inquiries[index];
+            const newInquiry = {
+                id: nextId,
+                name: inquiryData.name,
+                email: inquiryData.email,
+                phone: inquiryData.phone || '',
+                message: inquiryData.message,
+                propertyId: inquiryData.propertyId ? parseInt(inquiryData.propertyId) : null,
+                propertyName: propertyName || inquiryData.propertyName || '',
+                status: 'pending',
+                date: new Date().toISOString()
+            };
+
+            this.data.inquiries.push(newInquiry);
+            this.save();
+            return newInquiry;
+        }
     }
 
-    deleteInquiry(id) {
-        const index = this.data.inquiries.findIndex(i => i.id === parseInt(id));
-        if (index === -1) return false;
+    async updateInquiryStatus(id, status) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const targetId = parseInt(id);
+            await this.inquiriesColl.updateOne({ id: targetId }, { $set: { status } });
+            return await this.inquiriesColl.findOne({ id: targetId });
+        } else {
+            const index = this.data.inquiries.findIndex(i => i.id === parseInt(id));
+            if (index === -1) return null;
 
-        this.data.inquiries.splice(index, 1);
-        this.save();
-        return true;
+            this.data.inquiries[index].status = status;
+            this.save();
+            return this.data.inquiries[index];
+        }
+    }
+
+    async deleteInquiry(id) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const res = await this.inquiriesColl.deleteOne({ id: parseInt(id) });
+            return res.deletedCount > 0;
+        } else {
+            const index = this.data.inquiries.findIndex(i => i.id === parseInt(id));
+            if (index === -1) return false;
+
+            this.data.inquiries.splice(index, 1);
+            this.save();
+            return true;
+        }
     }
 
     // --- Newsletter Operations ---
-    getNewsletterSubscribers() {
-        return [...this.data.newsletter].sort((a, b) => new Date(b.date) - new Date(a.date));
+    async getNewsletterSubscribers() {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            return await this.newsletterColl.find().sort({ date: -1 }).toArray();
+        } else {
+            return [...this.data.newsletter].sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
     }
 
-    subscribeToNewsletter(email) {
-        // Check if already subscribed
+    async subscribeToNewsletter(email) {
         const normalizedEmail = email.toLowerCase().trim();
-        const existing = this.data.newsletter.find(n => n.email.toLowerCase() === normalizedEmail);
-        if (existing) return existing;
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const existing = await this.newsletterColl.findOne({ email: normalizedEmail });
+            if (existing) return existing;
+            
+            const highestSub = await this.newsletterColl.find().sort({ id: -1 }).limit(1).toArray();
+            const nextId = highestSub.length > 0 ? highestSub[0].id + 1 : 1;
+            
+            const newSub = {
+                id: nextId,
+                email: normalizedEmail,
+                date: new Date().toISOString()
+            };
+            await this.newsletterColl.insertOne(newSub);
+            return newSub;
+        } else {
+            const existing = this.data.newsletter.find(n => n.email.toLowerCase() === normalizedEmail);
+            if (existing) return existing;
 
-        const nextId = this.data.newsletter.length > 0
-            ? Math.max(...this.data.newsletter.map(n => n.id)) + 1
-            : 1;
+            const nextId = this.data.newsletter.length > 0
+                ? Math.max(...this.data.newsletter.map(n => n.id)) + 1
+                : 1;
 
-        const newSub = {
-            id: nextId,
-            email: normalizedEmail,
-            date: new Date().toISOString()
-        };
+            const newSub = {
+                id: nextId,
+                email: normalizedEmail,
+                date: new Date().toISOString()
+            };
 
-        this.data.newsletter.push(newSub);
-        this.save();
-        return newSub;
+            this.data.newsletter.push(newSub);
+            this.save();
+            return newSub;
+        }
     }
 
-    deleteNewsletterSubscriber(id) {
-        const index = this.data.newsletter.findIndex(n => n.id === parseInt(id));
-        if (index === -1) return false;
+    async deleteNewsletterSubscriber(id) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const res = await this.newsletterColl.deleteOne({ id: parseInt(id) });
+            return res.deletedCount > 0;
+        } else {
+            const index = this.data.newsletter.findIndex(n => n.id === parseInt(id));
+            if (index === -1) return false;
 
-        this.data.newsletter.splice(index, 1);
-        this.save();
-        return true;
+            this.data.newsletter.splice(index, 1);
+            this.save();
+            return true;
+        }
     }
 
     // --- Authentication ---
-    verifyAdmin(username, password) {
-        return this.data.admin.username === username && this.data.admin.password === password;
+    async verifyAdmin(username, password) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const admin = await this.adminColl.findOne({});
+            if (!admin) return false;
+            return admin.username === username && admin.password === password;
+        } else {
+            return this.data.admin.username === username && this.data.admin.password === password;
+        }
     }
 
-    updateAdminCredentials(username, password) {
-        this.data.admin = { username, password };
-        this.save();
-        return true;
+    async updateAdminCredentials(username, password) {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            await this.adminColl.updateOne({}, { $set: { username, password } }, { upsert: true });
+            return true;
+        } else {
+            this.data.admin = { username, password };
+            this.save();
+            return true;
+        }
     }
 
     // --- Stats Aggregator ---
-    getStats() {
-        const totalProperties = this.data.properties.length;
-        const totalInquiries = this.data.inquiries.length;
-        const pendingInquiries = this.data.inquiries.filter(i => i.status === 'pending').length;
-        const newsletterSubscribers = this.data.newsletter.length;
+    async getStats() {
+        if (this.isMongo) {
+            await this.mongoPromise;
+            const totalProperties = await this.propertiesColl.countDocuments();
+            const totalInquiries = await this.inquiriesColl.countDocuments();
+            const pendingInquiries = await this.inquiriesColl.countDocuments({ status: 'pending' });
+            const newsletterSubscribers = await this.newsletterColl.countDocuments();
 
-        return {
-            totalProperties,
-            totalInquiries,
-            pendingInquiries,
-            newsletterSubscribers
-        };
+            return {
+                totalProperties,
+                totalInquiries,
+                pendingInquiries,
+                newsletterSubscribers
+            };
+        } else {
+            const totalProperties = this.data.properties.length;
+            const totalInquiries = this.data.inquiries.length;
+            const pendingInquiries = this.data.inquiries.filter(i => i.status === 'pending').length;
+            const newsletterSubscribers = this.data.newsletter.length;
+
+            return {
+                totalProperties,
+                totalInquiries,
+                pendingInquiries,
+                newsletterSubscribers
+            };
+        }
     }
 }
 

@@ -57,14 +57,15 @@ function authenticateAdmin(req, res, next) {
 // ==========================================
 
 // POST: Admin Login
-app.post('/api/auth/login', (req, res) => {
+// POST: Admin Login
+app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const isValid = db.verifyAdmin(username, password);
+    const isValid = await db.verifyAdmin(username, password);
     if (!isValid) {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
@@ -106,7 +107,7 @@ app.get('/api/auth/validate', authenticateAdmin, (req, res) => {
 // ==========================================
 
 // GET: Retrieve properties with filtering
-app.get('/api/properties', (req, res) => {
+app.get('/api/properties', async (req, res) => {
     const filters = {
         category: req.query.category || 'all',
         location: req.query.location || 'all',
@@ -117,7 +118,7 @@ app.get('/api/properties', (req, res) => {
     };
 
     try {
-        const properties = db.getProperties(filters);
+        const properties = await db.getProperties(filters);
         res.json(properties);
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve properties' });
@@ -125,8 +126,8 @@ app.get('/api/properties', (req, res) => {
 });
 
 // GET: Retrieve single property details
-app.get('/api/properties/:id', (req, res) => {
-    const property = db.getPropertyById(req.params.id);
+app.get('/api/properties/:id', async (req, res) => {
+    const property = await db.getPropertyById(req.params.id);
     if (!property) {
         return res.status(404).json({ error: 'Property not found' });
     }
@@ -134,7 +135,7 @@ app.get('/api/properties/:id', (req, res) => {
 });
 
 // POST: Create a new property (Admin Only)
-app.post('/api/properties', authenticateAdmin, (req, res) => {
+app.post('/api/properties', authenticateAdmin, async (req, res) => {
     const requiredFields = ['name', 'location', 'type', 'area', 'developer', 'price', 'image', 'description1'];
     
     // Validation
@@ -145,7 +146,7 @@ app.post('/api/properties', authenticateAdmin, (req, res) => {
     }
 
     try {
-        const newProperty = db.createProperty(req.body);
+        const newProperty = await db.createProperty(req.body);
         res.status(201).json(newProperty);
     } catch (err) {
         res.status(500).json({ error: 'Failed to create property' });
@@ -153,9 +154,9 @@ app.post('/api/properties', authenticateAdmin, (req, res) => {
 });
 
 // PUT: Update a property (Admin Only)
-app.put('/api/properties/:id', authenticateAdmin, (req, res) => {
+app.put('/api/properties/:id', authenticateAdmin, async (req, res) => {
     try {
-        const updatedProperty = db.updateProperty(req.params.id, req.body);
+        const updatedProperty = await db.updateProperty(req.params.id, req.body);
         if (!updatedProperty) {
             return res.status(404).json({ error: 'Property not found' });
         }
@@ -166,9 +167,9 @@ app.put('/api/properties/:id', authenticateAdmin, (req, res) => {
 });
 
 // DELETE: Delete a property (Admin Only)
-app.delete('/api/properties/:id', authenticateAdmin, (req, res) => {
+app.delete('/api/properties/:id', authenticateAdmin, async (req, res) => {
     try {
-        const deleted = db.deleteProperty(req.params.id);
+        const deleted = await db.deleteProperty(req.params.id);
         if (!deleted) {
             return res.status(404).json({ error: 'Property not found' });
         }
@@ -184,16 +185,16 @@ app.delete('/api/properties/:id', authenticateAdmin, (req, res) => {
 // ==========================================
 
 // GET: Retrieve all inquiries (Admin Only)
-app.get('/api/inquiries', authenticateAdmin, (req, res) => {
+app.get('/api/inquiries', authenticateAdmin, async (req, res) => {
     try {
-        res.json(db.getInquiries());
+        res.json(await db.getInquiries());
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve inquiries' });
     }
 });
 
 // POST: Submit a new inquiry (Public)
-app.post('/api/inquiries', (req, res) => {
+app.post('/api/inquiries', async (req, res) => {
     const { name, email, message } = req.body;
 
     if (!name || !email || !message) {
@@ -201,7 +202,7 @@ app.post('/api/inquiries', (req, res) => {
     }
 
     try {
-        const inquiry = db.createInquiry(req.body);
+        const inquiry = await db.createInquiry(req.body);
         res.status(201).json({ success: true, message: 'Inquiry received successfully', data: inquiry });
     } catch (err) {
         res.status(500).json({ error: 'Failed to submit inquiry' });
@@ -209,14 +210,14 @@ app.post('/api/inquiries', (req, res) => {
 });
 
 // PUT: Update inquiry status (Admin Only - e.g., Mark as contacted)
-app.put('/api/inquiries/:id/status', authenticateAdmin, (req, res) => {
+app.put('/api/inquiries/:id/status', authenticateAdmin, async (req, res) => {
     const { status } = req.body;
     if (!status || !['pending', 'contacted'].includes(status)) {
         return res.status(400).json({ error: 'Invalid or missing status field' });
     }
 
     try {
-        const updated = db.updateInquiryStatus(req.params.id, status);
+        const updated = await db.updateInquiryStatus(req.params.id, status);
         if (!updated) {
             return res.status(404).json({ error: 'Inquiry not found' });
         }
@@ -227,9 +228,9 @@ app.put('/api/inquiries/:id/status', authenticateAdmin, (req, res) => {
 });
 
 // DELETE: Delete an inquiry (Admin Only)
-app.delete('/api/inquiries/:id', authenticateAdmin, (req, res) => {
+app.delete('/api/inquiries/:id', authenticateAdmin, async (req, res) => {
     try {
-        const deleted = db.deleteInquiry(req.params.id);
+        const deleted = await db.deleteInquiry(req.params.id);
         if (!deleted) {
             return res.status(404).json({ error: 'Inquiry not found' });
         }
@@ -245,23 +246,23 @@ app.delete('/api/inquiries/:id', authenticateAdmin, (req, res) => {
 // ==========================================
 
 // GET: Retrieve all newsletter subscribers (Admin Only)
-app.get('/api/newsletter', authenticateAdmin, (req, res) => {
+app.get('/api/newsletter', authenticateAdmin, async (req, res) => {
     try {
-        res.json(db.getNewsletterSubscribers());
+        res.json(await db.getNewsletterSubscribers());
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve newsletter list' });
     }
 });
 
 // POST: Subscribe to newsletter (Public)
-app.post('/api/newsletter', (req, res) => {
+app.post('/api/newsletter', async (req, res) => {
     const { email } = req.body;
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });
     }
 
     try {
-        const sub = db.subscribeToNewsletter(email);
+        const sub = await db.subscribeToNewsletter(email);
         res.status(201).json({ success: true, message: 'Subscribed successfully', data: sub });
     } catch (err) {
         res.status(500).json({ error: 'Failed to subscribe to newsletter' });
@@ -269,9 +270,9 @@ app.post('/api/newsletter', (req, res) => {
 });
 
 // DELETE: Delete a newsletter subscriber (Admin Only)
-app.delete('/api/newsletter/:id', authenticateAdmin, (req, res) => {
+app.delete('/api/newsletter/:id', authenticateAdmin, async (req, res) => {
     try {
-        const deleted = db.deleteNewsletterSubscriber(req.params.id);
+        const deleted = await db.deleteNewsletterSubscriber(req.params.id);
         if (!deleted) {
             return res.status(404).json({ error: 'Subscriber not found' });
         }
@@ -287,9 +288,9 @@ app.delete('/api/newsletter/:id', authenticateAdmin, (req, res) => {
 // ==========================================
 
 // GET: Dashboard Stats Summary (Admin Only)
-app.get('/api/stats', authenticateAdmin, (req, res) => {
+app.get('/api/stats', authenticateAdmin, async (req, res) => {
     try {
-        res.json(db.getStats());
+        res.json(await db.getStats());
     } catch (err) {
         res.status(500).json({ error: 'Failed to retrieve system statistics' });
     }

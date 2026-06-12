@@ -49,6 +49,11 @@
     box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: var(--font-primary);
     background-color: var(--color-bg-body);
@@ -180,10 +185,16 @@ button {
 }
 
 .menu-icon {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     color: var(--color-primary);
     cursor: pointer;
     display: none; /* Hide on large screens by default */
+    padding: 0.5rem;
+    transition: color var(--transition-fast);
+}
+
+.menu-icon:hover {
+    color: var(--color-gold);
 }
 
 @media (max-width: 768px) {
